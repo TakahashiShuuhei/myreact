@@ -24,6 +24,12 @@ const eventMap: Record<EventNames, string> = {
 };
 
 export function render(vnode: VNode, container: HTMLElement): void {
+  if (typeof vnode.type === 'function') {
+    // コンポーネントの処理
+    const componentVNode = vnode.type(vnode.props);
+    render(componentVNode, container);
+    return;
+  }
   // 文字列の場合はテキストノードを作成
   if (typeof vnode === 'string') {
     container.appendChild(document.createTextNode(vnode));

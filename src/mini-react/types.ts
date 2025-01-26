@@ -10,8 +10,11 @@ type DOMEvents = {
 // イベントハンドラーの名前を型として取得
 export type EventNames = keyof DOMEvents;
 
+// 関数コンポーネントの型定義を追加
+export type FunctionComponent = (props: Props) => VNode;
+
 export interface VNode {
-  type: string;
+  type: string | FunctionComponent;  // 文字列またはコンポーネント関数
   props: Props;
 }
 
