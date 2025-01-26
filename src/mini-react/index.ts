@@ -66,14 +66,14 @@ function renderComponent(component: FunctionComponent, props: Props, container?:
     const vnode = component(props);
     render(vnode, componentContainer);
     container.appendChild(componentContainer);
+    currentComponent = null;
+    currentContainer = null;  // クリア
+    return vnode;  // ここでも返す
   } else {
     currentContainer = null;
     const vnode = component(props);
     return vnode;
   }
-  
-  currentComponent = null;
-  currentContainer = null;  // クリア
 }
 
 // 再レンダリング関数を追加
