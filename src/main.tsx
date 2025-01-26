@@ -1,4 +1,5 @@
 import { render } from './mini-react'
+import { useState } from './mini-react/hooks'
 
 // Buttonコンポーネント
 function Button({ onClick, children }: { onClick: () => void, children: ValidNode[] }) {
@@ -24,6 +25,19 @@ function Content() {
   );
 }
 
+function Counter() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <div>
+      <p>Count: {String(count)}</p>
+      <button onClick={() => setCount(count + 1)}>
+        Increment
+      </button>
+    </div>
+  );
+}
+
 // アプリケーション
 const element = (
   <div className="container">
@@ -31,6 +45,7 @@ const element = (
       クリックしてください
     </Button>
     <Content />
+    <Counter />
   </div>
 );
 

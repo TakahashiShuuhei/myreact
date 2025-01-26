@@ -23,13 +23,61 @@ const eventMap: Record<EventNames, string> = {
   // 必要に応じて追加
 };
 
+// currentComponentをexport
+export let currentComponent: FunctionComponent | null = null;
+export let currentHook = 0;
+
+// currentHookを更新する関数を追加
+export function incrementCurrentHook() {
+  currentHook++;
+}
+
+// コンポーネントとそのDOMコンテナの対応を保存
+const componentRoots = new WeakMap<FunctionComponent, HTMLElement>();
+
+// コンポーネントの最後のpropsを保存
+const componentProps = new WeakMap<FunctionComponent, Props>();
+
+function renderComponent(component: FunctionComponent, props: Props, container?: HTMLElement) {
+  currentComponent = component;
+  currentHook = 0;
+  
+  componentProps.set(component, props);
+  
+  const vnode = component(props);
+  
+  if (container) {
+    const componentContainer = document.createElement('div');
+    componentRoots.set(component, componentContainer);
+    render(vnode, componentContainer);
+    container.appendChild(componentContainer);
+  }
+  
+  currentComponent = null;
+  return vnode;
+}
+
+// 再レンダリング関数を追加
+export function rerender(component: FunctionComponent) {
+  const container = componentRoots.get(component);
+  const props = componentProps.get(component);
+  
+  if (!container || !props) return;
+
+  // コンテナの中身をクリア
+  container.innerHTML = '';
+  
+  // 同じコンテナに再レンダリング
+  const vnode = renderComponent(component, props);
+  render(vnode, container);
+}
+
 export function render(vnode: VNode, container: HTMLElement): void {
   if (typeof vnode.type === 'function') {
-    // コンポーネントの処理
-    const componentVNode = vnode.type(vnode.props);
-    render(componentVNode, container);
+    renderComponent(vnode.type, vnode.props, container);  // 返り値を使わない
     return;
   }
+
   // 文字列の場合はテキストノードを作成
   if (typeof vnode === 'string') {
     container.appendChild(document.createTextNode(vnode));
