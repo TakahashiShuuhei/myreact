@@ -46,6 +46,7 @@ const element = (
     </Button>
     <Content />
     <Counter />
+    <Counter />
   </div>
 );
 

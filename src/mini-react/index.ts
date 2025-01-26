@@ -32,11 +32,22 @@ export function incrementCurrentHook() {
   currentHook++;
 }
 
-// コンポーネントとそのDOMコンテナの対応を保存
-const componentRoots = new WeakMap<FunctionComponent, HTMLElement>();
+// コンポーネントのインスタンス情報を保持
+export const componentInstances = new WeakMap<HTMLElement, {
+  component: FunctionComponent;
+  hooks: any[];
+}>();
 
 // コンポーネントの最後のpropsを保存
 const componentProps = new WeakMap<FunctionComponent, Props>();
+
+// 現在のコンポーネントのコンテナを取得
+export function getCurrentContainer(): HTMLElement | null {
+  return currentContainer;
+}
+
+// 現在のコンテナを追跡
+let currentContainer: HTMLElement | null = null;
 
 function renderComponent(component: FunctionComponent, props: Props, container?: HTMLElement) {
   currentComponent = component;
@@ -44,32 +55,50 @@ function renderComponent(component: FunctionComponent, props: Props, container?:
   
   componentProps.set(component, props);
   
-  const vnode = component(props);
-  
   if (container) {
     const componentContainer = document.createElement('div');
-    componentRoots.set(component, componentContainer);
+    // インスタンス情報を保存
+    componentInstances.set(componentContainer, {
+      component,
+      hooks: []
+    });
+    currentContainer = componentContainer;  // ここで設定
+    const vnode = component(props);
     render(vnode, componentContainer);
     container.appendChild(componentContainer);
+  } else {
+    currentContainer = null;
+    const vnode = component(props);
+    return vnode;
   }
   
   currentComponent = null;
-  return vnode;
+  currentContainer = null;  // クリア
 }
 
 // 再レンダリング関数を追加
-export function rerender(component: FunctionComponent) {
-  const container = componentRoots.get(component);
-  const props = componentProps.get(component);
-  
-  if (!container || !props) return;
+export function rerender(container: HTMLElement) {
+  const instance = componentInstances.get(container);
+  if (!instance) return;
+
+  const props = componentProps.get(instance.component);
+  if (!props) return;
 
   // コンテナの中身をクリア
   container.innerHTML = '';
   
-  // 同じコンテナに再レンダリング
-  const vnode = renderComponent(component, props);
+  // 再レンダリング前にコンテナを設定
+  currentContainer = container;
+  currentComponent = instance.component;
+  currentHook = 0;
+
+  // コンポーネントを再レンダリング
+  const vnode = instance.component(props);
   render(vnode, container);
+
+  // クリーンアップ
+  currentContainer = null;
+  currentComponent = null;
 }
 
 export function render(vnode: VNode, container: HTMLElement): void {
