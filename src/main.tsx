@@ -1,8 +1,12 @@
 import { render } from './mini-react'
 import { useState } from './mini-react/hooks'
+import { ValidNode } from './mini-react/types'
 
 // Buttonコンポーネント
-function Button({ onClick, children }: { onClick: () => void, children: ValidNode[] }) {
+function Button({ onClick, children }: { 
+  onClick: () => void, 
+  children?: ValidNode | ValidNode[] 
+}) {
   return (
     <button onClick={onClick} className="button">
       {children}

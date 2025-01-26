@@ -1,4 +1,4 @@
-import { VNode, Props, EventNames } from './types'
+import { VNode, Props, EventNames, FunctionComponent, ValidNode } from './types'
 
 export function createElement(
   type: string,
@@ -101,15 +101,14 @@ export function rerender(container: HTMLElement) {
   currentComponent = null;
 }
 
-export function render(vnode: VNode, container: HTMLElement): void {
-  if (typeof vnode.type === 'function') {
-    renderComponent(vnode.type, vnode.props, container);  // 返り値を使わない
+export function render(vnode: ValidNode, container: HTMLElement): void {
+  if (typeof vnode === 'string') {
+    container.appendChild(document.createTextNode(vnode));
     return;
   }
 
-  // 文字列の場合はテキストノードを作成
-  if (typeof vnode === 'string') {
-    container.appendChild(document.createTextNode(vnode));
+  if (typeof vnode.type === 'function') {
+    renderComponent(vnode.type, vnode.props, container);
     return;
   }
 

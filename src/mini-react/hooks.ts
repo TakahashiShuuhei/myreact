@@ -1,5 +1,4 @@
 import { rerender, currentComponent, currentHook, incrementCurrentHook, getCurrentContainer, componentInstances } from './index';
-import { FunctionComponent } from './types';
 
 export function useState<T>(initial: T): [T, (newValue: T) => void] {
   if (!currentComponent) {
