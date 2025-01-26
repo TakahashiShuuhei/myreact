@@ -10,14 +10,16 @@ type DOMEvents = {
 // イベントハンドラーの名前を型として取得
 export type EventNames = keyof DOMEvents;
 
+export interface VNode {
+  type: string;
+  props: Props;
+}
+
+export type ValidNode = VNode | string;  // unionは別の型として定義
+
 export type Props = {
-  children?: VNode[];
+  children?: ValidNode[];
   className?: string;
 } & Partial<DOMEvents> & {
   [key: string]: any;  // その他の属性用
-}
-
-export type VNode = {
-  type: string;
-  props: Props;
-} | string; 
+} 

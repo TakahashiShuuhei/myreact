@@ -5,5 +5,10 @@ export default defineConfig({
   publicDir: '../public',
   build: {
     outDir: '../dist'
+  },
+  esbuild: {
+    jsxFactory: 'createElement',
+    jsxFragment: 'Fragment',
+    jsxInject: `import { createElement } from './mini-react'`
   }
 }) 
