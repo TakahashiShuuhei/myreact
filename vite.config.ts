@@ -1,14 +1,15 @@
 import { defineConfig } from 'vite'
+import dts from 'vite-plugin-dts'
 
 export default defineConfig({
-  root: 'src',
-  publicDir: '../public',
   build: {
-    outDir: '../dist'
+    lib: {
+      entry: 'src/index.ts',
+      name: 'MiniReact',
+      formats: ['es', 'umd'],
+      fileName: (format) => `myreact.${format}.js`
+    },
+    outDir: 'dist'
   },
-  esbuild: {
-    jsxFactory: 'createElement',
-    jsxFragment: 'Fragment',
-    jsxInject: `import { createElement } from './mini-react'`
-  }
+  plugins: [dts()]
 }) 

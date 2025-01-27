@@ -1,6 +1,6 @@
 import { VNode, Props, ValidNode, EventNames } from "./types";
-import { render, unmountComponent } from "./index";
-import { eventMap } from "./index";
+import { render, unmountComponent } from "./framework";
+import { eventMap } from "./framework";
 
 // 差分検出と更新を行う関数
 export function diff(oldVNode: VNode, newVNode: VNode, container: HTMLElement) {

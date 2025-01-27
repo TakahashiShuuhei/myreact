@@ -1,7 +1,20 @@
 {
   "name": "myreact",
   "version": "1.0.0",
-  "main": "index.js",
+  "type": "module",
+  "main": "./dist/myreact.umd.js",
+  "module": "./dist/myreact.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/myreact.es.js",
+      "require": "./dist/myreact.umd.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build",
@@ -17,6 +30,7 @@
     "@types/node": "^22.10.10",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "^5.7.3",
-    "vite": "^6.0.11"
+    "vite": "^6.0.11",
+    "vite-plugin-dts": "^4.5.0"
   }
 }

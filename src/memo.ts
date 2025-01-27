@@ -1,5 +1,5 @@
 import { Props, FunctionComponent, VNode } from './types';
-import { getCurrentContainer, componentInstances } from './index';
+import { getCurrentContainer, componentInstances } from './framework';
 
 export function memo<P extends Props>(
   Component: FunctionComponent<P>,

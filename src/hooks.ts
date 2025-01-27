@@ -1,4 +1,4 @@
-import { rerender, currentComponent, currentHook, incrementCurrentHook, getCurrentContainer, componentInstances } from './index';
+import { rerender, currentComponent, currentHook, incrementCurrentHook, getCurrentContainer, componentInstances } from './framework';
 
 interface StateHook<T> {
   value: T;
