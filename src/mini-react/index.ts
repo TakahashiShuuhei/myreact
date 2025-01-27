@@ -1,3 +1,4 @@
+import { diff } from './diff';
 import { VNode, Props, EventNames, FunctionComponent, ValidNode } from './types'
 
 export function createElement(
@@ -36,10 +37,11 @@ export function incrementCurrentHook() {
 export const componentInstances = new WeakMap<HTMLElement, {
   component: FunctionComponent;
   hooks: any[];
+  props: Props;  // propsもインスタンス情報に含める
 }>();
 
 // コンポーネントの最後のpropsを保存
-const componentProps = new WeakMap<FunctionComponent, Props>();
+// const componentProps = new WeakMap<FunctionComponent, Props>();
 
 // 現在のコンポーネントのコンテナを取得
 export function getCurrentContainer(): HTMLElement | null {
@@ -53,24 +55,28 @@ function renderComponent(component: FunctionComponent, props: Props, container?:
   currentComponent = component;
   currentHook = 0;
   
-  componentProps.set(component, props);
-  
   if (container) {
     const componentContainer = document.createElement('div');
-    // インスタンス情報を保存
-    componentInstances.set(componentContainer, {
+    currentContainer = componentContainer;
+    
+    // インスタンス情報を先に設定
+    const instance = {
       component,
-      hooks: []
-    });
-    currentContainer = componentContainer;  // ここで設定
+      hooks: [],  // 空の配列で初期化
+      props: { ...props }
+    };
+    componentInstances.set(componentContainer, instance);
+    
     const vnode = component(props);
+    instance.props.lastVNode = vnode;
+    
     render(vnode, componentContainer);
     container.appendChild(componentContainer);
+    
     currentComponent = null;
-    currentContainer = null;  // クリア
-    return vnode;  // ここでも返す
-  } else {
     currentContainer = null;
+    return vnode;
+  } else {
     const vnode = component(props);
     return vnode;
   }
@@ -81,20 +87,8 @@ export function rerender(container: HTMLElement) {
   const instance = componentInstances.get(container);
   if (!instance) return;
 
-  const props = componentProps.get(instance.component);
-  if (!props) return;
-
-  // 一時的なコンテナを作成
-  const tempContainer = document.createElement('div');
-  
-  // 再レンダリング前にコンテナを設定
-  currentContainer = container;
-  currentComponent = instance.component;
-  currentHook = 0;
-
-  // コンポーネントを再レンダリング
-  const vnode = instance.component(props);
-  render(vnode, tempContainer);
+  // インスタンスからpropsを取得
+  const { props } = instance;
 
   // フォーカスと選択範囲を記憶
   const activeElement = document.activeElement as HTMLInputElement;
@@ -103,8 +97,27 @@ export function rerender(container: HTMLElement) {
   const selectionStart = activeElement?.selectionStart;
   const selectionEnd = activeElement?.selectionEnd;
 
-  // 要素を更新
-  container.replaceChildren(...tempContainer.children);
+  // 新しいVNodeを生成
+  currentContainer = container;
+  currentComponent = instance.component;
+  currentHook = 0;  // hooksのインデックスをリセット
+  const newVNode = instance.component(props);
+
+  // 前回のVNodeと比較して差分更新
+  const oldVNode = props.lastVNode;
+  if (oldVNode) {
+    diff(oldVNode, newVNode, container.firstChild as HTMLElement);
+  } else {
+    container.innerHTML = '';
+    render(newVNode, container);
+  }
+
+  // 新しいpropsを保存
+  const { lastVNode: _, ...restProps } = props;
+  instance.props = {
+    ...restProps,
+    lastVNode: newVNode
+  };
 
   // フォーカスと選択範囲を復元
   if (activeElementIndex >= 0) {
@@ -164,3 +177,5 @@ export function render(vnode: ValidNode, container: HTMLElement): void {
   
   container.appendChild(dom);
 } 
+
+export { eventMap };

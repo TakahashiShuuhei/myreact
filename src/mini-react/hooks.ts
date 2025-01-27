@@ -15,13 +15,13 @@ export function useState<T>(initial: T): [T, (newValue: T) => void] {
     throw new Error('Component instance not found');
   }
 
-  const hooks = instance.hooks;
-  const hook = hooks[currentHook] || { value: initial };
-  hooks[currentHook] = hook;
+
+  const hook = instance.hooks[currentHook] || { value: initial };
+  instance.hooks[currentHook] = hook;
   
   const setState = (newValue: T) => {
     hook.value = newValue;
-    rerender(container);  // コンテナを直接渡す
+    rerender(container);
   };
   
   incrementCurrentHook();
