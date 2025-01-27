@@ -13,7 +13,7 @@ type DOMEvents = {
 export type EventNames = keyof DOMEvents;
 
 // 関数コンポーネントの型定義を追加
-export type FunctionComponent = (props: Props) => VNode;
+export type FunctionComponent<P = Props> = (props: P) => VNode;
 
 export interface VNode {
   type: string | FunctionComponent;  // 文字列またはコンポーネント関数
@@ -48,16 +48,16 @@ interface MemoHook<T> {
 export type Hook = StateHook<any> | MemoHook<any> | EffectHook;
 
 // コンポーネントのインスタンス情報の型を定義
-interface ComponentInstance {
+export interface ComponentInstance {
   component: FunctionComponent;
   hooks: Hook[];
   props: InternalProps;
   mounted: boolean;
-  memoized?: {  // メモ化情報を追加
+  memoized?: {
     props: Props;
     result: VNode;
   };
 }
 
 // WeakMapの型も更新
-export const componentInstances = new WeakMap<HTMLElement, ComponentInstance>(); 
+// export const componentInstances = new WeakMap<HTMLElement, ComponentInstance>(); // 削除 

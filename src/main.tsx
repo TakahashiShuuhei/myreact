@@ -1,4 +1,3 @@
-import { render } from './mini-react'
 import { useState, useMemo, useCallback, useEffect } from './mini-react/hooks'
 import { ValidNode } from './mini-react/types'
 import { createRoot } from './mini-react'
