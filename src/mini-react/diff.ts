@@ -1,5 +1,5 @@
 import { VNode, Props, ValidNode, EventNames } from "./types";
-import { render } from "./index";
+import { render, unmountComponent } from "./index";
 import { eventMap } from "./index";
 
 // 差分検出と更新を行う関数
@@ -49,16 +49,33 @@ function updateProps(element: HTMLElement, oldProps: Props, newProps: Props) {
 }
 
 // 子要素の差分更新
-function reconcileChildren(
-  parent: HTMLElement,
-  oldChildren: ValidNode[],
-  newChildren: ValidNode[]
-) {
+function reconcileChildren(parent: HTMLElement, oldChildren: ValidNode[], newChildren: ValidNode[]) {
   const maxLength = Math.max(oldChildren.length, newChildren.length);
   
   for (let i = 0; i < maxLength; i++) {
     const oldChild = oldChildren[i];
     const newChild = newChildren[i];
+
+    // 古い子要素の削除時にアンマウント処理を実行
+    if (oldChild && !newChild) {
+      if (parent.childNodes[i]) {
+        unmountComponent(parent.childNodes[i] as HTMLElement);
+        parent.removeChild(parent.childNodes[i]);
+      }
+      continue;
+    }
+
+    // 要素の置き換え時もアンマウント処理が必要
+    if (typeof oldChild === 'object' && typeof newChild === 'object') {
+      if (oldChild.type !== newChild.type) {
+        unmountComponent(parent.childNodes[i] as HTMLElement);
+        const temp = document.createElement('div');
+        render(newChild, temp);
+        parent.childNodes[i].replaceWith(temp.firstChild!);
+      } else {
+        diff(oldChild, newChild, parent.childNodes[i] as HTMLElement);
+      }
+    }
 
     // 文字列の更新を追加
     if (typeof oldChild === 'string' || typeof newChild === 'string') {
@@ -72,17 +89,6 @@ function reconcileChildren(
     if (!oldChild && newChild) {
       render(newChild, parent);
       continue;
-    }
-
-    // 古い子要素の削除
-    if (oldChild && !newChild) {
-      parent.removeChild(parent.childNodes[i]);
-      continue;
-    }
-
-    // 両方存在する場合は差分更新
-    if (typeof oldChild === 'object' && typeof newChild === 'object') {
-      diff(oldChild, newChild, parent.childNodes[i] as HTMLElement);
     }
   }
 } 

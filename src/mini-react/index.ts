@@ -38,6 +38,7 @@ export const componentInstances = new WeakMap<HTMLElement, {
   component: FunctionComponent;
   hooks: Hook[];
   props: Props;  // propsもインスタンス情報に含める
+  mounted: boolean;  // マウント状態を追加
 }>();
 
 // コンポーネントの最後のpropsを保存
@@ -51,6 +52,28 @@ export function getCurrentContainer(): HTMLElement | null {
 // 現在のコンテナを追跡
 let currentContainer: HTMLElement | null = null;
 
+function mountComponent(container: HTMLElement) {
+  const instance = componentInstances.get(container);
+  if (!instance || instance.mounted) return;
+  
+  instance.mounted = true;
+}
+
+export function unmountComponent(container: HTMLElement) {
+  const instance = componentInstances.get(container);
+  if (!instance || !instance.mounted) return;
+
+  // エフェクトのクリーンアップを実行
+  instance.hooks.forEach(hook => {
+    if ('cleanup' in hook && hook.cleanup) {
+      hook.cleanup();
+    }
+  });
+
+  instance.mounted = false;
+  componentInstances.delete(container);
+}
+
 function renderComponent(component: FunctionComponent, props: Props, container?: HTMLElement) {
   currentComponent = component;
   currentHook = 0;
@@ -59,11 +82,11 @@ function renderComponent(component: FunctionComponent, props: Props, container?:
     const componentContainer = document.createElement('div');
     currentContainer = componentContainer;
     
-    // インスタンス情報を先に設定
     const instance = {
       component,
-      hooks: [],  // 空の配列で初期化
-      props: { ...props }
+      hooks: [],
+      props: { ...props },
+      mounted: false  // 初期状態は未マウント
     };
     componentInstances.set(componentContainer, instance);
     
@@ -72,6 +95,8 @@ function renderComponent(component: FunctionComponent, props: Props, container?:
     
     render(vnode, componentContainer);
     container.appendChild(componentContainer);
+    
+    mountComponent(componentContainer);  // マウント処理を実行
     
     currentComponent = null;
     currentContainer = null;

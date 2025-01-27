@@ -50,8 +50,9 @@ export type Hook = StateHook<any> | MemoHook<any> | EffectHook;
 // コンポーネントのインスタンス情報の型を定義
 interface ComponentInstance {
   component: FunctionComponent;
-  hooks: Hook[];  // any[] から Hook[] に変更
+  hooks: Hook[];
   props: InternalProps;
+  mounted: boolean;  // マウント状態を追加
 }
 
 // WeakMapの型も更新

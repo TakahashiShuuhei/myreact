@@ -70,7 +70,6 @@ export function useCallback<T extends Function>(callback: T, deps: DependencyLis
 export interface EffectHook {
   deps?: DependencyList;
   cleanup?: () => void;
-  hasRun?: boolean;
 }
 
 export function useEffect(effect: () => void | (() => void), deps: DependencyList = []) {
@@ -86,23 +85,22 @@ export function useEffect(effect: () => void | (() => void), deps: DependencyLis
 
   const hook = instance.hooks[currentHook] as EffectHook | undefined;
   const hookDeps = hook?.deps;
-  const depsChanged = !hookDeps || !deps || 
-    deps.length !== hookDeps.length || 
-    deps.some((dep, i) => dep !== hookDeps[i]);
+
+  // 初回実行時、またはdepsが変更された時のみtrue
+  const depsChanged = !hookDeps || 
+    hookDeps.length !== deps.length || 
+    !deps.every((dep, i) => dep === hookDeps[i]);
 
   // 初回実行時またはdepsが変更された時のみエフェクトを実行
-  if (!hook?.hasRun || depsChanged) {
-    // クリーンアップ関数を実行（初回以外）
+  if (depsChanged) {
     if (hook?.cleanup) {
       hook.cleanup();
     }
 
-    // 新しいエフェクトを実行
     const cleanup = effect();
     instance.hooks[currentHook] = {
       deps,
-      cleanup: cleanup || undefined,
-      hasRun: true
+      cleanup: cleanup || undefined
     };
   }
 
