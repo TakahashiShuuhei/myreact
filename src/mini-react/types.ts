@@ -52,7 +52,11 @@ interface ComponentInstance {
   component: FunctionComponent;
   hooks: Hook[];
   props: InternalProps;
-  mounted: boolean;  // マウント状態を追加
+  mounted: boolean;
+  memoized?: {  // メモ化情報を追加
+    props: Props;
+    result: VNode;
+  };
 }
 
 // WeakMapの型も更新
