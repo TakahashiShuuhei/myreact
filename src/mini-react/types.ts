@@ -32,10 +32,23 @@ interface InternalProps extends Props {
   lastVNode?: VNode;
 }
 
+// フックの値の型を定義
+interface StateHook<T> {
+  value: T;
+}
+
+interface MemoHook<T> {
+  value: T;
+  deps: any[];
+}
+
+// フックの種類をユニオン型で表現
+export type Hook = StateHook<any> | MemoHook<any>;
+
 // コンポーネントのインスタンス情報の型を定義
 interface ComponentInstance {
   component: FunctionComponent;
-  hooks: any[];
+  hooks: Hook[];  // any[] から Hook[] に変更
   props: InternalProps;
 }
 

@@ -1,5 +1,5 @@
 import { diff } from './diff';
-import { VNode, Props, EventNames, FunctionComponent, ValidNode } from './types'
+import { VNode, Props, EventNames, FunctionComponent, ValidNode, Hook } from './types'
 
 export function createElement(
   type: string,
@@ -36,7 +36,7 @@ export function incrementCurrentHook() {
 // コンポーネントのインスタンス情報を保持
 export const componentInstances = new WeakMap<HTMLElement, {
   component: FunctionComponent;
-  hooks: any[];
+  hooks: Hook[];
   props: Props;  // propsもインスタンス情報に含める
 }>();
 
