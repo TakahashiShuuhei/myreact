@@ -58,4 +58,8 @@ export function useMemo<T>(factory: () => T, deps: DependencyList): T {
   incrementCurrentHook();
 
   return newHook.value;
+}
+
+export function useCallback<T extends Function>(callback: T, deps: DependencyList): T {
+  return useMemo(() => callback, deps);
 } 

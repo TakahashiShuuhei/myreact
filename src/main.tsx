@@ -1,5 +1,5 @@
 import { render } from './mini-react'
-import { useState, useMemo } from './mini-react/hooks'
+import { useState, useMemo, useCallback } from './mini-react/hooks'
 import { ValidNode } from './mini-react/types'
 
 // Buttonコンポーネント
@@ -66,6 +66,28 @@ function ExpensiveComponent({ data }: { data: number[] }) {
   );
 }
 
+function CallbackComponent() {
+  const [count, setCount] = useState(0);
+  
+  const handleClick = useCallback(() => {
+    console.log('Button clicked!');
+    setCount(count + 1);
+  }, [count]);  // countが変わるたびに関数を再生成
+
+  const handleReset = useCallback(() => {
+    console.log('Reset clicked!');
+    setCount(0);
+  }, []);  // 依存配列が空なので関数は再生成されない
+
+  return (
+    <div>
+      <p>Count: {String(count)}</p>
+      <button onClick={handleClick}>Increment</button>
+      <button onClick={handleReset}>Reset</button>
+    </div>
+  );
+}
+
 // アプリケーション
 const element = (
   <div className="container">
@@ -76,6 +98,7 @@ const element = (
     <Counter />
     <Counter />
     <ExpensiveComponent data={[1, 2, 3, 4, 5]} />
+    <CallbackComponent />
   </div>
 );
 
