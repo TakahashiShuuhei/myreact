@@ -1,3 +1,5 @@
+import { EffectHook } from "./hooks";
+
 // DOMイベントの型定義
 type DOMEvents = {
   onClick: (event: MouseEvent) => void;
