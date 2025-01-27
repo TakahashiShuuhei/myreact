@@ -43,7 +43,7 @@ interface MemoHook<T> {
 }
 
 // フックの種類をユニオン型で表現
-export type Hook = StateHook<any> | MemoHook<any>;
+export type Hook = StateHook<any> | MemoHook<any> | EffectHook;
 
 // コンポーネントのインスタンス情報の型を定義
 interface ComponentInstance {

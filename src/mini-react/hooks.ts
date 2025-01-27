@@ -1,5 +1,9 @@
 import { rerender, currentComponent, currentHook, incrementCurrentHook, getCurrentContainer, componentInstances } from './index';
 
+interface StateHook<T> {
+  value: T;
+}
+
 export function useState<T>(initial: T): [T, (newValue: T) => void] {
   if (!currentComponent) {
     throw new Error('useState must be used within a component');
@@ -15,8 +19,7 @@ export function useState<T>(initial: T): [T, (newValue: T) => void] {
     throw new Error('Component instance not found');
   }
 
-
-  const hook = instance.hooks[currentHook] || { value: initial };
+  const hook = instance.hooks[currentHook] as StateHook<T> || { value: initial };
   instance.hooks[currentHook] = hook;
   
   const setState = (newValue: T) => {
@@ -64,13 +67,13 @@ export function useCallback<T extends Function>(callback: T, deps: DependencyLis
   return useMemo(() => callback, deps);
 }
 
-interface EffectHook {
+export interface EffectHook {
   deps?: DependencyList;
   cleanup?: () => void;
-  hasRun?: boolean;  // エフェクトが実行済みかを追跡
+  hasRun?: boolean;
 }
 
-export function useEffect(effect: () => void | (() => void), deps?: DependencyList) {
+export function useEffect(effect: () => void | (() => void), deps: DependencyList = []) {
   const container = getCurrentContainer();
   if (!container) {
     throw new Error('Component container not found');
@@ -82,9 +85,10 @@ export function useEffect(effect: () => void | (() => void), deps?: DependencyLi
   }
 
   const hook = instance.hooks[currentHook] as EffectHook | undefined;
-  const depsChanged = !hook?.deps || !deps || 
-    deps.length !== hook.deps.length || 
-    deps.some((dep, i) => dep !== hook.deps[i]);
+  const hookDeps = hook?.deps;
+  const depsChanged = !hookDeps || !deps || 
+    deps.length !== hookDeps.length || 
+    deps.some((dep, i) => dep !== hookDeps[i]);
 
   // 初回実行時またはdepsが変更された時のみエフェクトを実行
   if (!hook?.hasRun || depsChanged) {
