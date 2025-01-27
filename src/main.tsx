@@ -31,6 +31,7 @@ function Content() {
 
 function Counter() {
   const [count, setCount] = useState(0);
+  const [text, setText] = useState<string>('');  // 2つ目のstate
   
   return (
     <div>
@@ -38,6 +39,12 @@ function Counter() {
       <button onClick={() => setCount(count + 1)}>
         Increment
       </button>
+      <input 
+        value={text}
+        onInput={(e) => setText(e.target.value)}
+        placeholder="Type something..."
+      />
+      <p>You typed: {text}</p>
     </div>
   );
 }

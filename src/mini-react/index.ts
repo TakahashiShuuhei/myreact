@@ -84,8 +84,8 @@ export function rerender(container: HTMLElement) {
   const props = componentProps.get(instance.component);
   if (!props) return;
 
-  // コンテナの中身をクリア
-  container.innerHTML = '';
+  // 一時的なコンテナを作成
+  const tempContainer = document.createElement('div');
   
   // 再レンダリング前にコンテナを設定
   currentContainer = container;
@@ -94,7 +94,27 @@ export function rerender(container: HTMLElement) {
 
   // コンポーネントを再レンダリング
   const vnode = instance.component(props);
-  render(vnode, container);
+  render(vnode, tempContainer);
+
+  // フォーカスと選択範囲を記憶
+  const activeElement = document.activeElement as HTMLInputElement;
+  const activeElementIndex = Array.from(container.querySelectorAll('input, textarea, select'))
+    .indexOf(activeElement);
+  const selectionStart = activeElement?.selectionStart;
+  const selectionEnd = activeElement?.selectionEnd;
+
+  // 要素を更新
+  container.replaceChildren(...tempContainer.children);
+
+  // フォーカスと選択範囲を復元
+  if (activeElementIndex >= 0) {
+    const inputs = container.querySelectorAll('input, textarea, select');
+    const input = inputs[activeElementIndex] as HTMLInputElement;
+    input?.focus();
+    if (typeof selectionStart === 'number' && typeof selectionEnd === 'number') {
+      input.setSelectionRange(selectionStart, selectionEnd);
+    }
+  }
 
   // クリーンアップ
   currentContainer = null;
