@@ -25,4 +25,19 @@ export type Props = {
   className?: string;
 } & Partial<DOMEvents> & {
   [key: string]: any;  // その他の属性用
-} 
+}
+
+// 内部用のProps型を定義
+interface InternalProps extends Props {
+  lastVNode?: VNode;
+}
+
+// コンポーネントのインスタンス情報の型を定義
+interface ComponentInstance {
+  component: FunctionComponent;
+  hooks: any[];
+  props: InternalProps;
+}
+
+// WeakMapの型も更新
+export const componentInstances = new WeakMap<HTMLElement, ComponentInstance>(); 

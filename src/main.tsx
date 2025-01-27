@@ -1,5 +1,5 @@
 import { render } from './mini-react'
-import { useState } from './mini-react/hooks'
+import { useState, useMemo } from './mini-react/hooks'
 import { ValidNode } from './mini-react/types'
 
 // Buttonコンポーネント
@@ -49,6 +49,23 @@ function Counter() {
   );
 }
 
+function ExpensiveComponent({ data }: { data: number[] }) {
+  const [count, setCount] = useState(0);
+  const sum = useMemo(() => {
+    console.log('Calculating sum...');
+    return data.reduce((a, b) => a + b, 0);
+  }, [data]);  // countが変更されても再計算されない
+
+  return (
+    <div>
+      <div>Sum: {String(sum)}</div>
+      <button onClick={() => setCount(count + 1)}>
+        Count: {String(count)} (click me!)
+      </button>
+    </div>
+  );
+}
+
 // アプリケーション
 const element = (
   <div className="container">
@@ -58,6 +75,7 @@ const element = (
     <Content />
     <Counter />
     <Counter />
+    <ExpensiveComponent data={[1, 2, 3, 4, 5]} />
   </div>
 );
 
