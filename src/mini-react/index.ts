@@ -179,3 +179,11 @@ export function render(vnode: ValidNode, container: HTMLElement): void {
 } 
 
 export { eventMap };
+
+export function createRoot(container: HTMLElement) {
+  return {
+    render(element: VNode) {
+      render(element, container);
+    }
+  };
+}

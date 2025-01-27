@@ -1,6 +1,7 @@
 import { render } from './mini-react'
 import { useState, useMemo, useCallback, useEffect } from './mini-react/hooks'
 import { ValidNode } from './mini-react/types'
+import { createRoot } from './mini-react'
 
 // Buttonコンポーネント
 function Button({ onClick, children }: { 
@@ -110,19 +111,21 @@ function EffectComponent() {
   );
 }
 
-// アプリケーション
-const element = (
-  <div className="container">
-    <Button onClick={() => alert('クリックされました！')}>
-      クリックしてください
-    </Button>
-    <Content />
-    <Counter />
-    <Counter />
-    <ExpensiveComponent data={[1, 2, 3, 4, 5]} />
-    <CallbackComponent />
-    <EffectComponent />
-  </div>
-);
+function App() {
+  return (
+    <div className="container">
+      <Button onClick={() => alert('クリックされました！')}>
+        クリックしてください
+      </Button>
+      <Content />
+      <Counter />
+      <Counter />
+      <ExpensiveComponent data={[1, 2, 3, 4, 5]} />
+      <CallbackComponent />
+      <EffectComponent />
+    </div>
+  );
+}
 
-render(element, document.getElementById('root')!) 
+const root = createRoot(document.getElementById('root')!);
+root.render(<App />); 
