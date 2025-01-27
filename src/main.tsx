@@ -41,7 +41,7 @@ function Counter() {
       </button>
       <input 
         value={text}
-        onInput={(e) => setText(e.target.value)}
+        onInput={(e: InputEvent) => setText((e.target as HTMLInputElement).value)}
         placeholder="Type something..."
       />
       <p>You typed: {text}</p>
