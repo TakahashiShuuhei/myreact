@@ -62,4 +62,45 @@ export function useMemo<T>(factory: () => T, deps: DependencyList): T {
 
 export function useCallback<T extends Function>(callback: T, deps: DependencyList): T {
   return useMemo(() => callback, deps);
+}
+
+interface EffectHook {
+  deps?: DependencyList;
+  cleanup?: () => void;
+  hasRun?: boolean;  // エフェクトが実行済みかを追跡
+}
+
+export function useEffect(effect: () => void | (() => void), deps?: DependencyList) {
+  const container = getCurrentContainer();
+  if (!container) {
+    throw new Error('Component container not found');
+  }
+
+  const instance = componentInstances.get(container);
+  if (!instance) {
+    throw new Error('Component instance not found');
+  }
+
+  const hook = instance.hooks[currentHook] as EffectHook | undefined;
+  const depsChanged = !hook?.deps || !deps || 
+    deps.length !== hook.deps.length || 
+    deps.some((dep, i) => dep !== hook.deps[i]);
+
+  // 初回実行時またはdepsが変更された時のみエフェクトを実行
+  if (!hook?.hasRun || depsChanged) {
+    // クリーンアップ関数を実行（初回以外）
+    if (hook?.cleanup) {
+      hook.cleanup();
+    }
+
+    // 新しいエフェクトを実行
+    const cleanup = effect();
+    instance.hooks[currentHook] = {
+      deps,
+      cleanup: cleanup || undefined,
+      hasRun: true
+    };
+  }
+
+  incrementCurrentHook();
 } 

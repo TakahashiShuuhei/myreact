@@ -1,5 +1,5 @@
 import { render } from './mini-react'
-import { useState, useMemo, useCallback } from './mini-react/hooks'
+import { useState, useMemo, useCallback, useEffect } from './mini-react/hooks'
 import { ValidNode } from './mini-react/types'
 
 // Buttonコンポーネント
@@ -88,6 +88,28 @@ function CallbackComponent() {
   );
 }
 
+function EffectComponent() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    console.log('Effect ran, count is:', count);
+    
+    // クリーンアップ関数
+    return () => {
+      console.log('Cleaning up, count was:', count);
+    };
+  }, [count]);  // countが変更されたときだけ実行
+
+  return (
+    <div>
+      <p>Count: {String(count)}</p>
+      <button onClick={() => setCount(count + 1)}>
+        Increment
+      </button>
+    </div>
+  );
+}
+
 // アプリケーション
 const element = (
   <div className="container">
@@ -99,6 +121,7 @@ const element = (
     <Counter />
     <ExpensiveComponent data={[1, 2, 3, 4, 5]} />
     <CallbackComponent />
+    <EffectComponent />
   </div>
 );
 
