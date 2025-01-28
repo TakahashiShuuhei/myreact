@@ -7,7 +7,7 @@ export default defineConfig({
       entry: 'src/index.ts',
       name: 'MiniReact',
       formats: ['es', 'umd'],
-      fileName: (format) => `myreact.${format}.js`
+      fileName: (format) => `uhah-myreact.${format}.js`
     },
     outDir: 'dist'
   },

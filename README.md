@@ -13,6 +13,6 @@
 ## インストール
 
 ```bash
-npm install myreact
+npm install uhah-myreact
 ```
 

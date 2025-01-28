@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect, createRoot } from 'myreact'
+import { useState, useMemo, useCallback, useEffect, createRoot } from 'uhah-myreact'
 
 // Buttonコンポーネント
 function Button({ onClick, children }: { 

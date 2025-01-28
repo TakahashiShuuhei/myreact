@@ -1,15 +1,15 @@
 {
-  "name": "myreact",
+  "name": "uhah-myreact",
   "version": "1.0.0",
   "type": "module",
-  "main": "./dist/myreact.umd.js",
-  "module": "./dist/myreact.es.js",
+  "main": "./dist/uhah-myreact.umd.js",
+  "module": "./dist/uhah-myreact.es.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/myreact.es.js",
-      "require": "./dist/myreact.umd.js"
+      "import": "./dist/uhah-myreact.es.js",
+      "require": "./dist/uhah-myreact.umd.js"
     }
   },
   "files": [
