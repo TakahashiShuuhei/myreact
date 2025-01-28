@@ -1,6 +1,6 @@
 {
   "name": "uhah-myreact",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "./dist/uhah-myreact.umd.js",
   "module": "./dist/uhah-myreact.es.js",

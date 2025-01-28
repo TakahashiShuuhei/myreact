@@ -190,13 +190,24 @@ export function render(vnode: ValidNode, container: HTMLElement): void {
   
   // 子要素の再帰的レンダリング
   if (props.children) {
-    props.children.forEach(child => {
-      render(child, dom);
-    });
+    renderChildren(props.children, dom);
   }
   
   container.appendChild(dom);
-} 
+}
+
+function renderChildren(children: ValidNode[] | ValidNode, container: HTMLElement) {
+  if (Array.isArray(children)) {
+    children.forEach(child => {
+      if (child != null) {
+        render(child, container);
+      }
+    });
+  } else if (children != null) {
+    // 単一の子要素の場合
+    render(children, container);
+  }
+}
 
 export { eventMap };
 

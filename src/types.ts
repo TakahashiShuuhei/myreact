@@ -18,12 +18,13 @@ export type FunctionComponent<P = Props> = (props: P) => VNode;
 export interface VNode {
   type: string | FunctionComponent;  // 文字列またはコンポーネント関数
   props: Props;
+  children?: ValidNode[] | ValidNode;  // 配列または単一の値を許容
 }
 
-export type ValidNode = VNode | string;  // unionは別の型として定義
+export type ValidNode = VNode | string | number | boolean | null | undefined;
 
 export type Props = {
-  children?: ValidNode[];
+  children?: ValidNode[] | ValidNode;  // ここも同様に修正
   className?: string;
 } & Partial<DOMEvents> & {
   [key: string]: any;  // その他の属性用
