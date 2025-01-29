@@ -17,8 +17,8 @@ export function diff(oldVNode: VNode, newVNode: VNode, container: HTMLElement) {
   updateProps(container, oldVNode.props, newVNode.props);
 
   // 3. 子要素の差分更新
-  const oldChildren = oldVNode.props.children || [];
-  const newChildren = newVNode.props.children || [];
+  const oldChildren = (Array.isArray(oldVNode.props.children) ? oldVNode.props.children : [oldVNode.props.children].filter(Boolean)) as ValidNode[];
+  const newChildren = (Array.isArray(newVNode.props.children) ? newVNode.props.children : [newVNode.props.children].filter(Boolean)) as ValidNode[];
   reconcileChildren(container, oldChildren, newChildren);
 }
 

@@ -21,7 +21,7 @@ export interface VNode {
   children?: ValidNode[] | ValidNode;  // 配列または単一の値を許容
 }
 
-export type ValidNode = VNode | string | number | boolean | null | undefined;
+export type ValidNode = VNode | string;
 
 export type Props = {
   children?: ValidNode[] | ValidNode;  // ここも同様に修正
